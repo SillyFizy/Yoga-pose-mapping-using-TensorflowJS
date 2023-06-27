@@ -2,8 +2,8 @@
   <div>
     <div class="flex flex-col justify-center items-center relative">
       <div class="relative">
-        <img src="" alt="">
-        <input type="file" ref="uploadedImg" @change="onFileSelected">
+        <input ref="fileInput" type="file" accept="image/*" @change="onFileSelected">
+        <img v-if="imgURL" :src="img" alt="" width="640" height="360">
         <div v-for="keypoint in keyPoints" :key="keyPoints.indexOf(keypoint)"
              class="bg-white rounded-full w-2 h-2 absolute"
              :style="{top: keypoint[0] * squarifiedBbox.width+squarifiedBbox.y+'px', left: keypoint[1] *squarifiedBbox.height+squarifiedBbox.x+'px'}"></div>
@@ -23,15 +23,15 @@ import Highlighter from "../components/Highlighter.vue";
 import * as tf from '@tensorflow/tfjs';
 import {cocoSSDModel} from "/AIModels/CocoSSDModel.js";
 import {poseEstimate} from "/AIModels/PoseEstimate.js";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import Swal from "sweetalert2";
 
 
 //references
 const img = ref();
+const fileInput = ref();
 const isPerson = ref([])
-const uploadedImg = ref([]);
-const isDragging = ref(false);
+const uploadedImg = ref();
 const objects = ref([]);
 const keyPoints = ref([]);
 const squarifiedBbox = ref({
@@ -44,13 +44,32 @@ const squarifiedBbox = ref({
 
 //methods
 const onFileSelected = (event) => {
-  const files = event.target.files[0];
-  if (files.length === 0)
-    return;
-  else {
-    uploadedImg.value = URL.createObjectURL(files)
-    console.log(uploadedImg.value)
+  let input = fileInput.value
+  let file = input.files;
+  if(file && file[0]){
+    let reader = new FileReader();
+    reader.onload = e =>{
+      uploadedImg.value = e.target.result;
+    }
+    reader.readAsDataURL(file[0])
   }
+}
+const imgURL = computed(()=>{
+  if(uploadedImg.value){
+    return img.value = URL.createObjectURL(dataURLtoBlob(uploadedImg.value))
+  }
+  return null;
+})
+function dataURLtoBlob(dataURL) {
+  const arr = dataURL.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
 }
 const DetectPerson = async () => {
   const imgElem = img.value;
