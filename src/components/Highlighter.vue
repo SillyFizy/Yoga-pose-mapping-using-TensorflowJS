@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute bg-opacity-25 border border-amber-600"
+  <div class="absolute bg-opacity-25 border border-[#bbff0f]"
        :style="{ left: squarifiedBbox.x + 'px', top:squarifiedBbox.y + 'px', width: squarifiedBbox.width + 'px', height: squarifiedBbox.height + 'px' }">
   </div>
 </template>
@@ -8,7 +8,7 @@
 const props = defineProps({
   object: Object,
 })
-import {defineEmits, onMounted, ref, watch} from "vue";
+import { onMounted, ref, watch} from "vue";
 
 const emit = defineEmits(['squarifiedBbox'])
 

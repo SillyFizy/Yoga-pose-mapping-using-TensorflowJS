@@ -1,15 +1,24 @@
 <template>
   <div>
     <div class="flex flex-col justify-center items-center relative">
-      <div class="relative">
-        <input ref="fileInput" type="file" accept="image/*" @change="onFileSelected">
-        <img v-if="imgURL" :src="img" alt="" width="640" height="360">
+      <div class="relative flex flex-col items-center justify-center">
+<!--        <input ref="fileInput" type="file" accept="image/*" @change="onFileSelected">-->
+        <img ref="img" src="../assets/test1.webp" alt="" width="720" height="480">
         <div v-for="keypoint in keyPoints" :key="keyPoints.indexOf(keypoint)"
-             class="bg-white rounded-full w-2 h-2 absolute"
+             class="bg-[#0fffcb] rounded-full w-2 h-2 absolute"
              :style="{top: keypoint[0] * squarifiedBbox.width+squarifiedBbox.y+'px', left: keypoint[1] *squarifiedBbox.height+squarifiedBbox.x+'px'}"></div>
         <Highlighter @squarifiedBbox="estimatePose" v-for="object in objects" :object="object"
                      :key="objects.indexOf(object)"></Highlighter>
         <Button @click="DetectPerson">Detect</Button>
+      </div>
+    </div>
+    <div class="flex flex-col items-center mt-10">
+      <h1 class="text-3xl text-white">Here are some example poses you can try</h1>
+      <div class="flex justify-center gap-2 mt-4">
+        <img src="../assets/example-pose1.png" class="rounded-2xl w-1/6 h-full" alt="Example Pose 1">
+        <img src="../assets/example-pose2.png" class="rounded-2xl w-1/6 h-full" alt="Example Pose 2">
+        <img src="../assets/example-pose3.png" class="rounded-2xl w-1/6 h-full" alt="Example Pose 3">
+        <img src="../assets/example-pose4.png" class="rounded-2xl w-1/6 h-full" alt="Example Pose 4">
       </div>
     </div>
   </div>
@@ -43,23 +52,24 @@ const squarifiedBbox = ref({
 
 
 //methods
-const onFileSelected = (event) => {
-  let input = fileInput.value
-  let file = input.files;
-  if(file && file[0]){
-    let reader = new FileReader();
-    reader.onload = e =>{
-      uploadedImg.value = e.target.result;
-    }
-    reader.readAsDataURL(file[0])
-  }
-}
-const imgURL = computed(()=>{
-  if(uploadedImg.value){
-    return img.value = URL.createObjectURL(dataURLtoBlob(uploadedImg.value))
-  }
-  return null;
-})
+// const onFileSelected = (event) => {
+//   let input = fileInput.value
+//   let file = input.files;
+//   if(file && file[0]){
+//     let reader = new FileReader();
+//     reader.onload = e =>{
+//       uploadedImg.value = e.target.result;
+//       console.log(uploadedImg.value)
+//     }
+//     reader.readAsDataURL(file[0])
+//   }
+// }
+// const imgURL = computed(()=>{
+//   if(uploadedImg.value){
+//     return img.value = URL.createObjectURL(dataURLtoBlob(uploadedImg.value))
+//   }
+//   return null;
+// })
 function dataURLtoBlob(dataURL) {
   const arr = dataURL.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
